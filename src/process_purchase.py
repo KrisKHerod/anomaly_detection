@@ -87,7 +87,7 @@ def calculate_anomaly (item, settings, path, friends_list, purchases_list):
 
 
 # this function will handle purchases
-def purchase (item, settings, path, friends_list, purchases_list):
+def purchase (item, settings, path, friends_list, purchases_list, stream):
 
 	# check if user exists in purchases
 	if item['id'] in purchases_list.purchases.keys():
@@ -104,9 +104,11 @@ def purchase (item, settings, path, friends_list, purchases_list):
 		purchases_list.purchases[item['id']].append(float(item['amount']))
 
 
-	if item['id'] in friends_list.friends.keys():
-		# pass
-		calculate_anomaly(item, settings, path, friends_list, purchases_list)
+	# check if the current item is part of batch or streaming
+	if stream:
+
+		if item['id'] in friends_list.friends.keys():
+			calculate_anomaly(item, settings, path, friends_list, purchases_list)
 
 
 

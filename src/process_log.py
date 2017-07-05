@@ -39,16 +39,16 @@ def init (path):
 
 
 # this function will iterate through the lines of the file
-def main (data, settings, path, friends_list, purchases_list):
+def main (data, settings, path, friends_list, purchases_list, stream):
 
 	for index, item in enumerate(data):
 		if item['event_type'] == 'befriend':
 			process_friend.befriend(item, friends_list)
 
 		elif item['event_type'] == 'purchase':
-			process_purchase.purchase(item, settings, path, friends_list, purchases_list)
+			process_purchase.purchase(item, settings, path, friends_list, purchases_list, stream)
 
-		elif item['event_type'] == 'defriend':
+		elif item['event_type'] == 'unfriend':
 			process_friend.defriend(item, friends_list)
 
 
@@ -78,13 +78,13 @@ if __name__ == "__main__":
 
 
 	# read the batch file
-	data, settings = load.readFile_batch(paths[1])
-	main(data, settings, paths[3], friends_list, purchases_list)
+	data, settings = load.readFile_batch(batch_path)
+	main(data, settings, output_path, friends_list, purchases_list, False)
 
 
-	# read the stream file
-	data = load.readFile_stream(paths[2])
-	main(data, settings, paths[3], friends_list, purchases_list)
+	# read the stream file, the last value is to determine whether it is the batch or streaming file
+	data = load.readFile_stream(stream_path)
+	main(data, settings, output_path, friends_list, purchases_list, True)
 
 	# print (friends_list.friends)
 	# print (purchases_list.purchases)
