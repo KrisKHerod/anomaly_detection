@@ -19,7 +19,7 @@ from data import Friends, Purchases
 
 import process_friend
 import process_purchase
-
+import load
 
 # get the environmental variables
 paths = sys.argv
@@ -104,11 +104,11 @@ if __name__ == "__main__":
 	purchases_list = Purchases()
 
 	# read the batch file
-	data, settings = readFile_batch(paths[1])
+	data, settings = load.readFile_batch(paths[1])
 	main(data, settings, paths[3], friends_list, purchases_list)
 
 	# read the stream file
-	data = readFile_stream(paths[2])
+	data = load.readFile_stream(paths[2])
 	main(data, settings, paths[3], friends_list, purchases_list)
 
 	# print (friends_list.friends)

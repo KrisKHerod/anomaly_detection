@@ -19,51 +19,14 @@ from data import Friends, Purchases
 
 import process_friend
 import process_purchase
-
-
-# get the environmental variables
-paths = sys.argv
-
-
-# read the file
-
-def readFile_batch (path):
-
-	data = []
-
-	with open(path, 'r') as file:
-		for index, line in enumerate(file):
-
-			line = json.loads(line)
-
-			if index == 0:
-				settings = line
-			else:
-				data.append(line)
-
-	return data, settings
-
-
-
-def readFile_stream(path):
-
-	data = []
-
-	with open(path, 'r') as file:
-		for index, line in enumerate(file):
-
-			line = json.loads(line)
-			data.append(line)
-
-	return data
-	
-
+import load
 
 
 
 
 def init (path):
 
+	# check if the path exists and create a new file
 	if os.path.isfile(path):
 		with open(path, 'w') as f:
 			pass
@@ -80,13 +43,13 @@ def main (data, settings, path, friends_list, purchases_list):
 
 	for index, item in enumerate(data):
 		if item['event_type'] == 'befriend':
-			process_friend.befriend(item, settings, friends_list)
+			process_friend.befriend(item, friends_list)
 
 		elif item['event_type'] == 'purchase':
 			process_purchase.purchase(item, settings, path, friends_list, purchases_list)
 
 		elif item['event_type'] == 'defriend':
-			process_friend.defriend(item, settings, friends_list)
+			process_friend.defriend(item, friends_list)
 
 
 
@@ -97,18 +60,30 @@ def main (data, settings, path, friends_list, purchases_list):
 if __name__ == "__main__":
 
 	# print (paths)
-	init(paths[3])
+	paths = sys.argv
+
+	# get the path names
+	filename = paths[0]
+	batch_path = paths[1]
+	stream_path = paths[2]
+	output_path = paths[3]
+
+	# check the output path
+	init(output_path)
 
 
+	# initialize the data storage classes
 	friends_list = Friends()
 	purchases_list = Purchases()
 
+
 	# read the batch file
-	data, settings = readFile_batch(paths[1])
+	data, settings = load.readFile_batch(paths[1])
 	main(data, settings, paths[3], friends_list, purchases_list)
 
+
 	# read the stream file
-	data = readFile_stream(paths[2])
+	data = load.readFile_stream(paths[2])
 	main(data, settings, paths[3], friends_list, purchases_list)
 
 	# print (friends_list.friends)

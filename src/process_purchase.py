@@ -1,6 +1,8 @@
 
 from datetime import datetime
 
+
+
 def calculate_anomaly (item, settings, path, friends_list, purchases_list):
 
 	# # calculate the mean of the whole network
