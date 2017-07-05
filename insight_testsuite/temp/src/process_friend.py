@@ -1,6 +1,8 @@
 
-# this function handles the case when a friend request
-def befriend (item, settings, friends_list):
+# Handles a friend request by checking whether the friend exists in a list and if not, adds them to the list
+# item: friend to add
+# friends_list: current friends of the user represented by a dictionary
+def befriend (item, friends_list):
 
 	# check if id1 is in the overall friends_list dictionary
 	if item['id1'] in friends_list.friends.keys():
@@ -26,8 +28,10 @@ def befriend (item, settings, friends_list):
 
 
 
-
-def defriend(item, settings, friends_list):
+# Handles a defriend request be removing a friend from the dictionary and remove they user from the friends dictionary
+# item: friend to add
+# friends_list: current friends of the user represented by a dictionary
+def defriend(item, friends_list):
 
 	# check the id1 friend list and remove the id2 from that list
 	for i, ids in enumerate(friends_list.friends[item['id1']]):

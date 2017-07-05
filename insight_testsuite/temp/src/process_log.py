@@ -21,49 +21,12 @@ import process_friend
 import process_purchase
 import load
 
-# get the environmental variables
-paths = sys.argv
-
-
-# read the file
-
-def readFile_batch (path):
-
-	data = []
-
-	with open(path, 'r') as file:
-		for index, line in enumerate(file):
-
-			line = json.loads(line)
-
-			if index == 0:
-				settings = line
-			else:
-				data.append(line)
-
-	return data, settings
-
-
-
-def readFile_stream(path):
-
-	data = []
-
-	with open(path, 'r') as file:
-		for index, line in enumerate(file):
-
-			line = json.loads(line)
-			data.append(line)
-
-	return data
-	
-
-
 
 
 
 def init (path):
 
+	# check if the path exists and create a new file
 	if os.path.isfile(path):
 		with open(path, 'w') as f:
 			pass
@@ -76,17 +39,17 @@ def init (path):
 
 
 # this function will iterate through the lines of the file
-def main (data, settings, path, friends_list, purchases_list):
+def main (data, settings, path, friends_list, purchases_list, stream):
 
 	for index, item in enumerate(data):
 		if item['event_type'] == 'befriend':
-			process_friend.befriend(item, settings, friends_list)
+			process_friend.befriend(item, friends_list)
 
 		elif item['event_type'] == 'purchase':
-			process_purchase.purchase(item, settings, path, friends_list, purchases_list)
+			process_purchase.purchase(item, settings, path, friends_list, purchases_list, stream)
 
-		elif item['event_type'] == 'defriend':
-			process_friend.defriend(item, settings, friends_list)
+		elif item['event_type'] == 'unfriend':
+			process_friend.defriend(item, friends_list)
 
 
 
@@ -97,19 +60,31 @@ def main (data, settings, path, friends_list, purchases_list):
 if __name__ == "__main__":
 
 	# print (paths)
-	init(paths[3])
+	paths = sys.argv
+
+	# get the path names
+	filename = paths[0]
+	batch_path = paths[1]
+	stream_path = paths[2]
+	output_path = paths[3]
+
+	# check the output path
+	init(output_path)
 
 
+	# initialize the data storage classes
 	friends_list = Friends()
 	purchases_list = Purchases()
 
-	# read the batch file
-	data, settings = load.readFile_batch(paths[1])
-	main(data, settings, paths[3], friends_list, purchases_list)
 
-	# read the stream file
-	data = load.readFile_stream(paths[2])
-	main(data, settings, paths[3], friends_list, purchases_list)
+	# read the batch file
+	data, settings = load.readFile_batch(batch_path)
+	main(data, settings, output_path, friends_list, purchases_list, False)
+
+
+	# read the stream file, the last value is to determine whether it is the batch or streaming file
+	data = load.readFile_stream(stream_path)
+	main(data, settings, output_path, friends_list, purchases_list, True)
 
 	# print (friends_list.friends)
 	# print (purchases_list.purchases)

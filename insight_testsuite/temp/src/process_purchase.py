@@ -1,6 +1,8 @@
 
 from datetime import datetime
 
+
+
 def calculate_anomaly (item, settings, path, friends_list, purchases_list):
 
 	# # calculate the mean of the whole network
@@ -19,6 +21,7 @@ def calculate_anomaly (item, settings, path, friends_list, purchases_list):
 		# add the 1st degree freinds to the
 		friend_ids = friends_list.friends[item['id']]
 
+		# doing a breadth first search on all friends
 		for degree in range(int(settings['D'])):
 
 			# create a list to contain the ids of the next degree of friends
@@ -65,14 +68,14 @@ def calculate_anomaly (item, settings, path, friends_list, purchases_list):
 	sd = (sum([(x-mean)**2 for x in network_purchases])/float(len(network_purchases)))**0.5
 
 
-	print (mean, sd, item['amount'])
+	# print (mean, sd, item['amount'])
 
-	# check if the amount is greater than 3 standard deviations of the mean of the users social network
 	if float(item['amount']) > mean+3*sd:
 
 		# create the data to be written to the output file
 		line = '{"event_type": "purchase", "timestamp": "' + item["timestamp"] + '", "id": "' + item["id"] + '", "amount": "' + item['amount'] + '", "mean": "%0.2f", "sd": "%0.2f"}\n' %(mean, sd)
-		# print (line)
+		print (line)
+
 		with open(path, 'a') as f:
 			f.write(line)
 
@@ -85,7 +88,7 @@ def calculate_anomaly (item, settings, path, friends_list, purchases_list):
 
 
 # this function will handle purchases
-def purchase (item, settings, path, friends_list, purchases_list):
+def purchase (item, settings, path, friends_list, purchases_list, stream):
 
 	# check if user exists in purchases
 	if item['id'] in purchases_list.purchases.keys():
@@ -102,9 +105,11 @@ def purchase (item, settings, path, friends_list, purchases_list):
 		purchases_list.purchases[item['id']].append(float(item['amount']))
 
 
-	if item['id'] in friends_list.friends.keys():
-		# pass
-		calculate_anomaly(item, settings, path, friends_list, purchases_list)
+	# check if the current item is part of batch or streaming
+	if stream:
+
+		if item['id'] in friends_list.friends.keys():
+			calculate_anomaly(item, settings, path, friends_list, purchases_list)
 
 
 

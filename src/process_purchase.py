@@ -21,6 +21,7 @@ def calculate_anomaly (item, settings, path, friends_list, purchases_list):
 		# add the 1st degree freinds to the
 		friend_ids = friends_list.friends[item['id']]
 
+		# doing a breadth first search on all friends
 		for degree in range(int(settings['D'])):
 
 			# create a list to contain the ids of the next degree of friends
@@ -58,8 +59,7 @@ def calculate_anomaly (item, settings, path, friends_list, purchases_list):
 	network_purchases = network_purchases[:int(settings['T'])]
 	# separate the timestamps from the amounts
 	timestamps, network_purchases = zip(*network_purchases)
-	print (network_purchases)
-
+	# print (network_purchases)
 
 	# calculate the mean of the top "T" purchases
 	mean = sum(network_purchases)/float(len(network_purchases))
@@ -67,14 +67,14 @@ def calculate_anomaly (item, settings, path, friends_list, purchases_list):
 	sd = (sum([(x-mean)**2 for x in network_purchases])/float(len(network_purchases)))**0.5
 
 
-	print (mean, sd, item['amount'])
+	# print (mean, sd, item['amount'])
 
-	# check if the amount is greater than 3 standard deviations of the mean of the users social network
 	if float(item['amount']) > mean+3*sd:
 
 		# create the data to be written to the output file
 		line = '{"event_type": "purchase", "timestamp": "' + item["timestamp"] + '", "id": "' + item["id"] + '", "amount": "' + item['amount'] + '", "mean": "%0.2f", "sd": "%0.2f"}\n' %(mean, sd)
 		# print (line)
+
 		with open(path, 'a') as f:
 			f.write(line)
 

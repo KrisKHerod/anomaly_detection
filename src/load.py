@@ -1,16 +1,17 @@
 import json
 
 
-# read the file
-
+# Read the batch file which contains settings which contains friending/defriending events, and purchase events.
 def readFile_batch (path):
-
+	# store data in list
 	data = []
+
 	# check that keys exist
 	type1 = ['amount', 'event_type', 'timestamp', 'id']
 	type2 = ['event_type', 'timestamp', 'id1', 'id2']
 	type3 = ['D', 'T']
 
+	# open the file
 	with open(path, 'r') as file:
 		for index, line in enumerate(file):
 
@@ -38,10 +39,13 @@ def readFile_batch (path):
 	return data, settings
 
 
-
+# Reads the stream file which contains all of the settings.
 def readFile_stream(path):
 
 	data = []
+
+	type1 = ['amount', 'event_type', 'timestamp', 'id']
+	type2 = ['event_type', 'timestamp', 'id1', 'id2']
 
 	with open(path, 'r') as file:
 		for index, line in enumerate(file):
